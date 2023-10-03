@@ -1,0 +1,211 @@
+﻿save.image(file="my_workspace.RData")
+savehistory("my_history.txt")
+data=read.table("alkfos.txt",header=T)
+ write.table(data,file="alkfos.csv",row.names=F,col.names=T,quote=F,sep=";",dec=",")
+dev.copy2pdf(file="pieplot_col.pdf")
+ install.packages("RcolorBrewer")
+  library(RcolorBrewer)
+pal=heat.colors(3)
+
+3BASIC
+class() summary () length() dim(M) names(df)[1]="" head() str()
+w=seq(4,10,2) # sequenza da 4 a 10 con incremento 2
+z=rep(c(7,9,13),1:3) #7 9 9 13x3
+ labels=paste(rep("A",10),1:10,sep="")
+t=sample(c("T","C"),10,replace=T) #moneta
+ quantile(z,c(0.25,0.75)) 
+M=matrix(1:12,nrow=3,byrow=T) #matrice
+ rownames(M)=c("A","B","C")
+ab=rbind(a,b) #vettori, cbind
+ q2=factor(rep(LETTERS[17:26],rep(5,10)) #ex YYYZZZ, n=1:50 p=n<31
+DF=data.frame(var3,var2,var1)
+ data[,-c(1,3,5)]
+ data$c18=data$c24 #sostituisce colonna c18 con c24
+  data$grp=factor(data$grp) #anche as.factor
+apply(rats,2,sd) #loop sd tutte colonne (2)
+
+
+4GRAPHS
+library(RColorBrewer) pal=rainbow(4) pal2=brewer.pal(4,"Blues") 
+ names(titanclas)=c("","")
+pie(titanclas,main="Passengers of Titanic",col=c("white","yellow","orange","darkred"))
+barplot(titanclas,main="Passengers of Titanic",col=pal,hor=T)
+library(MASS)
+ mosaicplot(caith,main="Colours of Hair and Eye", shade=T)
+caleor=crabs$CL[crabs$sp=="O"] #estrae
+hist(caleor,freq=F,main="Histogram of caleor") #breaks=seq(10,50,10) per accorpare
+ d=density(caleor)
+  lines(d) #disegna curva dens
+boxplot(caleor,col=grey(0.8), notch=T, main="carapace lengths",las=1) #las nomiscale
+ rug(caleor, side=2) #aggiuge tutti dati codicebarre
+
+par(mfrow=c(1,3))
+ plot(cawior~caleor,main="Length and Width of the 100 carapaces", pch=20,xlab="length (in
+mm)",ylab="width (in mm)")
+  abline(h=mean(cawior),lty=2,col=grey(0.6)) #rifatto con mean(caleor)
+  points(mean(caleor),mean(cawior),col="red",pch=20,cex=2) #baricentro
+sexcol=ifelse(sex=="M","blue","red") #in plot col=sexcol
+ boxplot(caleor~crabsex, col=c("green","orange"), notch=T) #tacche non sovrapposte
+
+
+6DISTRIBUZIONI
+dbinom(7,size=10,prob=0.5)
+dnorm(165,mean=175,sd=10) #senza mean/sd: canonica
+ plot(x=0:50, dbinom(x,size=50,prob=0.33),type="h")
+ plot(seq(80,184,0.5),dnorm(x,mean=132,sd=13),type="l")
+  segments(160,0,160,dnorm(160,mean=132,sd=13),col="red") #segments(x1,y1,x2,y2)
+ 1-pnorm(160,mean=132,sd=13) #maggiore 160: bassa, raro
+
+pbinom(16,size=20,prob=0.5) #1-pbin esclude 16: faccio partire da 15. binomtest
+ inflim=qnorm(0.025,mean=132,sd=13) #limiti quantile 2.5
+ suplim=qnorm(0.975,mean=132,sd=13) #97.5
+  segments(inflim,0 , inflim,dnorm(inflim, mean=132, sd=13), col="red") #=con sup
+ ic=seq(inflim, suplim, 0.1)
+  segments(ic,0 , ic,dnorm(ic, mean=132, sd=13), col="red") #coloro 95
+  text (132 , 0.012, labels="95%")
+rnorm(10,mean=7,sd=5) # random, hist(freq=F
+plot ( x, dchisq(x, df=2), type="l") #chisq prob
+
+
+8TEST
+t.test(daily.intake,mu=7725) #quantitativo, assumo normale
+wilcox.test(daily.intake,mu=7725) #non parametrico
+ t.test(energy$expend~energy$stature) #2 camponi, 1 descritto da 2. idem wilcox
+ t.test(intake$pre,intake$post,paired=T) #stesso campione
+
+binom.test(39,215,0.15) #qualitativo esatto
+prop.test(successi,totali) #succ:c(). 2sampl usa x2. se p=/=intervalli, fisher
+chisq.test(data) #2qualit, 1sampl. data= matr c1 successi. rifiuto: p<5% e x>0. mosaicplot
+fisher.test(data) #esatto, tabelle 2x2 uso se in tabella ho un numero <5
+
+
+10REGRESS
+mod=lm(short.velocity~blood.glucose,data=thuesen)  #y~stati
+  #regr lin, y~x, df. summary: p<5 allora coeff=/=0. multipla glucose+altro. chiamo per coeff
+ options(na.action=na.exclude); fitted(mod) #estrae y attesa; resid(mod)#lungh residui 
+ plot(thuesen)
+  abline(mod) #regress
+  segments(thuesen$blood.glucose,fitted(mod),thuesen$blood.glucose,
+thuesen$short.velocity) #(x,regr , x,y)
+ qqnorm(resid(mod))#test normalità; shapiro.test(resid(mod))
+cor(thuesen$blood.glucose,thuesen$short.velocity,use="complete.obs") #corr pearson, normale
+ cor.test(thuesen$blood.glucose,thuesen$short.velocity) #per non parametrica: ,method="spearman"
+
+red.cell.folate$ventilation=as.factor(red.cell.folate$ventilation)
+ mod=lm(folate~ventilation,data=red.cell.folate)
+  m=tapply(red.cell.folate$folate,red.cell.folate$ventilation,mean); m[2]-m[1] #significativo?
+anova(mod) #F=varTRA/ENTR>1 sign effetto gruppo, -2df qual
+ pairwise.t.test(red.cell.folate$folate,red.cell.folate$ventilation,p.adj="bonferroni") #corretto significatività
+  boxplot(folate~ventilation,xlab="ventilation",ylab="folate",col=heat.colors(3),las=1)
+kruskal.test(red.cell.folate$folate,red.cell.folate$ventilation) #non normale, meno efficace
+
+
+11GENES
+install.packages("adegenet", dep=T); library(adegenet); data(nancycats) #GENIND
+ nancycats.pop=genind2genpop(nancycats) #GENPOP
+str.genind=df2genind(temp,ploidy=2,sep="/") #da readtable, senza headerT
+library(ape)
+ seq=read.dna("example.fasta",format="fasta")
+  seq.genind=DNAbin2genind(seq) #toglie identici
+
+ cod=paste("U157",17:24,sep="")
+seqGB=read.GenBank(cod)
+ attr(seqGB,"species") #nomisp, "description":titolo; as.character(seqGB): print; può diventare genind
+write.dna(seqGB,file="seqGB.fas",format="fasta")
+write.dna(seqGB,file="seqGB2.phy",format="sequential") #o interleaved
+
+
+12PCA
+library(ade4)
+pca1=dudi.pca(data[,-1],center=T,scale=T)
+ perc.eig=100 * pca1$eig/sum(pca1$eig); cumsum(perc.eig) #% varianza con tot eigv
+plot(pca1$li[,1],pca1$li[,2],xlab="PC1",ylab="PC2",type="n") #n:vuoto
+ text(pca1$li[,1],pca1$li[,2],labels=abbreviate(row.names(data)),cex=0.7)
+ lab1=paste("PC1 (",round(perc.eig[1],2),"% of total variance)",sep="") #in xlab, =y 
+   plot(ex$li[,1],ex$li[,2],xlab=lab1,ylab=lab2,col=pal[iris$Species])
+ legend("topright",legend=levels(iris$Species), col=pal, pch=20)
+s.label(pca1$li,xax=1,yax=2) #altro modo
+ add.scatter.eig(pca1$eig,nf=3,xax=1,yax=2,posi="bottomleft")
+s.corcircle(pca1$c1,xax=1,yax=2) #cerchio correlaz 1pca:x
+s.class(ex$li, fac=iris$Species,  xax=1, yax=2, col=pal) #quello a bussola
+
+any(is.na(wood.genind$tab)) #sum dice quanti. meno 5%. (14genetici)
+ scaled=scaleGen(wood.genind,scale=F,NA.method="mean") #media na
+  pca.wood=dudi.pca(scaled,center=T,scale=F) #non bilancio ma centro
+  sp=read.table("telegonus.txt",header=T); attr(sp,"species")
+   plot(pca$li,col=pal[as.factor(sp$V1)], pch=as.numeric(as.factor(butternames$V1)), xlab="PC1", ylab="PC2")
+    legend("topleft", ncol=2, col=pal, pch=1:10, legend=unique(butternames$V1))
+
+
+15MDS
+ eurodist.full=as.dist(eurodist,diag=T,upper=T) #triang->quadr
+cult.std = scale(cult) #bilancio!
+ cult.dist.q=dist(cult.std,diag=T,upper=T) #crea matr
+d1=dist.dna(woodmouse,pairwise.deletion=T) #dist.gene con $tab o genpop method=1 o 3, da obj=as.genpop(microsatt$tab)
+swiss.dist=dist(scale(swiss))
+swiss.mds=cmdscale(swiss.dist) #MDS
+ plot(swiss.mds,xlab="DIM 1", ylab="DIM2", type="n") 
+  text(swiss.mds,labels=rownames(swiss), checks=0.7) #poi usati labels=labels(swiss.dist)
+
+library(MASS)
+swiss.kmds=isoMDS(swiss.dist) #kmds non-metrico
+ plot(swiss.kmds$points, xlab="DIM.1", ylab="DIM.2", type="n", sub=paste("stress = ", round(swiss.kmds$stress,2), "%", sep="")) #stress subtitle
+
+microbov.pop=genind2genpop(microbov,pop=as.factor(microbov$pop)) #genetici
+ microbov.rey=dist.genpop(microbov.pop,method=3)
+
+
+GENPOP
+library(adegenet); library(pegas) #prima ade
+nancycats.loci=as.loci(nancycats)
+hw.test(nancycats,B=1000) #x2 hw
+Fst.tab=Fst(nancycats.loci) #indice fissaz
+library(hierfstat) 
+ nancycats.hs=genind2hierfstat(nancycats) 
+  pw.fst=pairwise.Wcfst(nancycats.hs)
+   pw.fst=as.dist(pw.fst) #matr dist
+
+16AMOVA
+ind.dist=dist.gene(nancycats$tab, pairwise.deletion=T)
+g=nancycats$pop
+ amova(ind.dist~g, nperm=1000) #y~x, ip0 f=0
+p=as.factor(c(rep("A",137),rep("B",100)))
+ amova(ind.dist~p/g,nperm=1000) #p/g raggruppamento da +alto a +basso
+
+
+CLUSTER
+dist=dist(scale(data[,1:4])) 
+ hc=hclust(dist)
+plot(hc, labels=data[,5], cex=0.6) #dendrogramma
+ rect.hclust(hc,k=3,border = 2:4) #k=2, b=2:3
+ hc3=cutree(hc,k=3) #vettore con gruppo appartenenza
+  table(data$Species,hc3) #test efficacia se priori so
+ha=hclust(dist,method="average") 
+hw=hclust(dist,method="ward.D")
+
+17KMEANS
+km=kmeans(scale(data[,-5]),centers=3,nstart=15)
+ table(data$Species,km$cluster)
+plot(data[,1:6],col=pal[km$cluster]) 
+tot.var=vector("numeric",10)
+for (i in 1:10) {
+tot.var[i]=kmeans(scale(iris[,-5]),centers=i,nstart=10)$tot.withinss
+}
+ plot(1:10,tot.var,type="b",xlab="number of centers",ylab="total variance")
+
+
+DISCRIMINANTE
+scaled=scale(data[,1:4])
+t1=sample(1:50,30); t2=sample(51:100,30) ; t3=sample(101:150,30) ; t=c(t1,t2,t3) 
+  sum(data$Type==1) #per sapere quanti, 60%
+train=scaled[t,] 
+ train=data.frame(train,Species=iris$Species[t]) #senza species
+library(MASS) 
+mylda=lda(Type~.,data=train) 
+mylda.values=predict(mylda)
+ ldahist(data=mylda.values$x[,1],g=mylda.values$class)
+topredict=scaled[-t,]
+trueclasses=data$Type[-t]
+ mylda.predict=predict(mylda,as.data.frame(topredict))
+  table(mylda.predict$class,trueclasses)
+   barplot(t(mylda.predict$posterior),col=c("red","blue","green"),names.arg=trueclasses,las=2,cex.names=0.7) 
