@@ -1,6 +1,6 @@
 # R-Biometry-2022
 ## Course
-Biometria
+Biometria evoluzionistica ed ecologica
 
 Master's course on Biodiversity and evolution 
 
