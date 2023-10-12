@@ -1,0 +1,198 @@
+#******************************
+#****   ESAME 19/01/2023   ****
+#****   ALESSIA BUCCELLA   ****
+#******************************
+
+# ESERCIZIO
+# Plantula vagula è una pianta erbacea diploide caratterizzata dalla presenza di una certa variabilità morfologica che 
+# si sospetta riconducibile alla presenza di sotto-specie criptiche. Sono state campionate 450 piante
+# per 30 marcatori microsatellite (plantula.txt) in un'area ristretta della Nuova Caledonia. 
+# Il nostro obiettivo è testare la presenza di struttura all'interno della popolazione di piante.
+
+#*** IMPORT DATI ***
+data=read.table(file="plantula.txt", header=T)
+head(data)
+str(data)
+
+#*** Oggetto genind ***
+library(adegenet)
+ind=df2genind(data,ploidy=2,sep="/") 
+ind
+summary(ind)
+str(ind)
+head(ind$tab)
+# Tabella contenente tutti i genotipi:
+# le righe indicano gli individui, ad ogni colonna è associato un possibile allele dei loci considerati
+
+ind$loc.n.all
+# Vettore con il numero di alleli per locus
+library(MASS)
+any(is.na(ind$tab))
+# Non sono presenti dati mancanti
+
+# Test di Hardy-Weinberg:
+library(pegas)
+hw.test(ind,B=1000)
+# Ipotesi nulla H0= equilibrio HW, chi2 = 0. Ipotesi alternativa H1= chi2 >0
+# Tutti i test sono significativi, la popolazione non è in equilibrio di HW per questi loci
+# Questo può essere dovuto a varie cause, tra le quali la presenza di struttura nella popolazione
+
+#*** MATRICE DI DISTANZA ***
+library(ape)
+dist=dist.gene(ind$tab) 
+# Non occorre inserire metodi di pairwise deletion perché non sono presenti NA
+summary(dist)
+
+#*** MULTIDIMENSIONAL SCALING (MDS) NON METRICO ***
+kmds=isoMDS(dist) # Metodo di Kruskal
+head(kmds$points)
+# Matrice contenente le coordinate delle osservazioni in uno spazio 2D
+
+kmds$stress
+# Lo stress misura lo scarto tra la configurazione ottenuta e la matrice di distanze di partenza
+# Valore soddisfacente (basandosi su Sturrock e Tocha, 2000)
+
+plot(kmds$points, main=" MDS Non Metrico ", xlab="DIM.1", ylab="DIM.2", sub=paste("stress = ", round(kmds$stress,2), "%", sep=""), pch=20, col="darkblue") 
+dev.copy2pdf(file="1MDS_points.pdf")
+plot(kmds$points, main=" MDS Non Metrico ", xlab="DIM 1", ylab="DIM 2", type="n", sub=paste("stress = ", round(kmds$stress,2), "%", sep="")) 
+text(kmds$points, col="darkblue")
+# Crea un grafico vuoto e inserisce con text le etichette contenenti il numero del campione
+dev.copy2pdf(file="2MDS_numbers.pdf")
+# Sul grafico si notano due nuvole di dati distinte, una a sinistra ed una a destra, entrambe disperse in verticale
+# Questa configurazione suggerisce la presenza di struttura
+# Si ipotizza l'esistenza di due sottopopolazioni di Plantula vagula
+
+
+#*** CLUSTER ANALYSIS ***
+#** Metodo di Ward **
+# Il metodo di Ward o della varianza minimizza la varianza totale all’interno dei clusters
+hw=hclust(dist,method="ward.D")
+hw
+plot(hw, main="Cluster Analysis: Metodo di Ward", cex=0.2)
+rect.hclust(hw,k=2,border = 2:3) 
+# Aggiunge al plot rettangoli che identificano i (k) cluster, ‘border’ specifica i colori 
+dev.copy2pdf(file="3Cluster_Ward.pdf")
+# Il dendrogramma si divide in due gruppi
+# Questo è coerente con quanto previsto dall'analisi multidimensionale
+hw2=cutree(hw,k=2)
+
+#** Complete linkage **
+hc=hclust(dist)
+plot(hc, main="Cluster Analysis: Metodo Complete Linkage", cex=0.3)
+rect.hclust(hc,k=2,border = 2:3) 
+dev.copy2pdf(file="4Cluster_Linkage.pdf")
+hc2=cutree(hc,k=2)
+#** Metodo della Media **
+ha=hclust(dist)
+plot(ha, main="Cluster Analysis: Metodo della Media", cex=0.3)
+rect.hclust(ha,k=2,border = 2:3) 
+dev.copy2pdf(file="5Cluster_Average.pdf")
+ha2=cutree(ha,k=2)
+
+#** Confronto Metodi di Clustering**
+par(mfrow=c(1,3))
+plot(hc, main="
+Metodo Complete Linkage", cex=0.3)
+rect.hclust(hc,k=2,border = 2:4) 
+plot(ha, main="Cluster Analysis 
+Metodo della Media", cex=0.3)
+rect.hclust(ha,k=2,border = 2:3) 
+plot(hw, main="
+Metodo di Ward", cex=0.3)
+rect.hclust(hw,k=2,border = 2:3) 
+dev.copy2pdf(file="6ClusterAll.pdf")
+# Il confronto dei tre dendrogrammi conferma una suddivisione dei dati in due principali rami
+dev.off()# Reset della partizione del plot
+# Si può verificare l'uguaglianza della classificazione di ogni punto nello stesso cluster:
+hw2==hc2
+sum(hw2==hc2) 
+# Tutti i 450 casi danno TRUE
+sum(hw2==ha2)
+# Quindi tutti i tre metodi creano gli stessi cluster. Si può anche verificare visivamente: 
+
+#*** Grafico MDS colorato su base dei cluster ***
+pal=c("red","blue")
+plot(kmds$points, main=" MDS Non Metrico ", xlab="DIM.1", ylab="DIM.2", type="n", sub=paste("stress = ", round(kmds$stress,2), "%", sep="")) 
+text(kmds$points, col=pal[hw2])
+legend("topleft", title="Cluster", legend=levels(as.factor(hw2)), col=pal, pch=20)
+dev.copy2pdf(file="7MDS_color.pdf")
+# E' possibile colorare i punti sul grafico MDS in base all'appartenenza ai due gruppi trovati nella cluster analysis
+# Il risultato avvalora l'ipotesi di presenza di 2 sottopopolazioni
+
+# Confrontando i tre metodi di clustering con il grafico MDS:
+par(mfrow=c(1,3))
+plot(kmds$points, main="
+Metodo Complete Linkage", xlab="DIM.1", ylab="DIM.2", type="n", sub=paste("stress = ", round(kmds$stress,2), "%", sep="")) 
+text(kmds$points, col=pal[hc2])
+legend("bottomleft", title="Cluster", legend=levels(as.factor(hc2)), col=pal, pch=20)
+plot(kmds$points, main=" MDS confronto Cluster analysis
+Metodo Della Media", xlab="DIM.1", ylab="DIM.2", type="n", sub=paste("stress = ", round(kmds$stress,2), "%", sep="")) 
+text(kmds$points, col=pal[ha2])
+legend("bottomleft", title="Cluster", legend=levels(as.factor(ha2)), col=pal, pch=20)
+plot(kmds$points, main=" 
+Metodo Di Ward", xlab="DIM.1", ylab="DIM.2", type="n", sub=paste("stress = ", round(kmds$stress,2), "%", sep="")) 
+text(kmds$points, col=pal[hw2])
+legend("bottomleft", title="Cluster", legend=levels(as.factor(hw2)), col=pal, pch=20)
+dev.copy2pdf(file="8MDS_col_Cluster.pdf")
+dev.off()
+# Si ottengono tre grafici identici
+# Proseguiamo le analisi con il metodo di Ward, basato sulla varianza
+
+
+# K MEANS
+km=kmeans(ind$tab,centers=2,nstart=15)
+hw2==km$cluster 
+# Ha invertito i due cluster ma sono tutti FALSE
+tot.var=vector("numeric",10)
+for (i in 1:10) {
+tot.var[i]=kmeans(ind$tab,centers=i,nstart=10)$tot.withinss
+}
+ plot(1:10,tot.var,type="b",xlab="number of centers",ylab="total variance")
+# 2 è un buon valore ma anche 4 sembra un ragionevole divario nella varianza
+dev.copy2pdf(file="9_4.pdf")
+# E' interessante come anche nei cluster la seconda separazione è in 4 gruppi
+hw4=cutree(hw,k=4)
+pal=rainbow(4)
+plot(hw, main="Cluster Analysis: Metodo di Ward", cex=0.2)
+rect.hclust(hw,k=4,border = 2:5)
+dev.copy2pdf(file="10_cl.pdf")
+plot(kmds$points, main=" MDS Non Metrico ", xlab="DIM.1", ylab="DIM.2", type="n", sub=paste("stress = ", round(kmds$stress,2), "%", sep="")) 
+text(kmds$points, col=pal[hw4])
+dev.copy2pdf(file="11mds.pdf")
+# Questi due cluster aggiuntivi sono coerenti con gli estremi in alto e in basso in ciascuno dei due gruppi.
+# Non sono però adeguatamente distinti e quindi non usabili
+# Però si può ipotizzare che la divergenza interna possa in futuro portare alla creazione di ulteriori sottopopolazioni
+
+
+#*** TABELLA ***
+str(labels(dist))
+t=table(labels(dist), hw2)
+t
+# Il numero 1 nella prima o nella seconda colonna indica il cluster di appartenenza
+# I cluster si separano negli stessi due gruppi osservati in MDS
+# Ad esempio sono stati controllati diversi valori in tabella: 87, 213, 199, 208
+t[87,] 
+# Appartiene al cluster 2 (presenta 1 sulla seconda colonna), che corrisponde alla nuvola disposta a sinistra nel grafico MDS 
+t[199,] # Nel cluster 1, a destra nel grafico
+hw2[199] # Altro metodo di estrazione di questa informazione
+sum(t[,1])
+sum(t[,2]) 
+# Le ultime due righe indicano il numero di elementi in ogni cluster
+
+write.table(t,file="Cluster.csv",row.names=T,col.names=T,quote=F,sep=";",dec=",")
+# Export tabella di appartenenza al Cluster 1 o 2, per facilitare il confronto con il grafico
+read=read.table(file="Cluster.csv", header=T, sep=";", dec=",", check.names=F)
+head(read)
+
+
+#*** ANALYSIS OF MOLECULAR VARIANCE (AMOVA) ***
+g=hw2
+amova(dist~g, nperm=1000)
+# Prima tabella: righe= 1 varianza tra gruppi, 2 dentro i gruppi, 3 varianza totale
+#                colonne= 1 somma dei quadrati delle differenze SSD, 2 media dei quadrati delle differenze MSD, 3 gradi di libertà
+# Seconda tabella: varianza tra ed entro i gruppi, p value
+# phi=Fst, indice di fissazione di Wright. Fst=0 : assenza di struttura, Fst cresce all'aumentare della divergenza interna alla popolazione
+
+# L'analisi AMOVA convalida l'ipotesi di presenza di struttura
+# H0: assenza di struttura, se P-value >5%; Fst=0
+# In questo caso: P-value=0 (<0,05); Fst>0 : l'ipotesi nulla può essere rifiutata
