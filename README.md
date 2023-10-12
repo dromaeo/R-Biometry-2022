@@ -7,5 +7,5 @@ Master's course on Biodiversity and evolution
 University of Bologna - 2022/23
 
 ## Contents
-+ 'formulario.txt': Quick shortcut of commands related to the topics presented during lectures
-+ 'Esercizio esame': Folder containing the exercise done for the final exam. Sample of the good grasp on statistical analysis and genetics 
++ 'formulario.txt': Quick shortcut of commands related to topics presented during the lectures
++ 'Esercizio esame': Folder containing the exercise done for the final exam. Sample of a good grasp on statistical analysis and genetics 
